@@ -1,7 +1,7 @@
 module.exports = function ($logger, $projectData, changesInfo) {
-  if (!changesInfo.modulesChanged) {
-    return;
-  }
+//  if (!changesInfo.modulesChanged) {
+//    return;
+//  }
 
   var fs = require('fs'),
       path = require('path'),
@@ -9,7 +9,7 @@ module.exports = function ($logger, $projectData, changesInfo) {
 
   function log(what) {
     // enable this line to see what the nodeify plugin is up to
-    // console.log(what);
+      console.log(what);
   }
 
   var shims = require('./shims.json');
@@ -35,6 +35,9 @@ module.exports = function ($logger, $projectData, changesInfo) {
     "glob",
     "fs.realpath",
     ".bin"
+  ];
+  var whitelist = [
+    "aws-amplify"
   ];
 
   function changeFiles(files, replace, by) {
@@ -97,7 +100,7 @@ module.exports = function ($logger, $projectData, changesInfo) {
 
     var fileName = packagepath + "/package.json";
     var file = require(fileName);
-    if (blacklist.indexOf(file.name) > -1) {
+    if (whitelist.indexOf(file.name) == -1) {
       return;
     }
 
@@ -208,7 +211,7 @@ module.exports = function ($logger, $projectData, changesInfo) {
       var folder = fs.readdirSync(folderStr);
       for (var j = 0; j < folder.length; j++) {
         var folderName = folder[j];
-        if (/*appDependencies.hasOwnProperty(folderName) &&*/ blacklist.indexOf(folderName) === -1 && !folderName.startsWith("@") && (folderName === "nativescript-nodeify" || !folderName.startsWith("nativescript"))) {
+        if (/*appDependencies.hasOwnProperty(folderName) &&*/ whitelist.indexOf(folderName) > -1 && !folderName.startsWith("@") && (folderName === "nativescript-nodeify" || !folderName.startsWith("nativescript"))) {
           var f = path.join(folderStr, folderName);
           findFilesByName(f, "package.json", packages);
         }
